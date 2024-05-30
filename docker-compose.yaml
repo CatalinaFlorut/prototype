@@ -1,0 +1,283 @@
+version: '2'
+
+services:
+  tls-ca:
+    container_name: tls-ca
+    image: hyperledger/fabric-ca
+    command: sh -c 'fabric-ca-server start -d -b tls-ca-admin:tls-ca-adminpw --port 7052'
+    environment:
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CSR_CN=ca-tls
+      - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
+      - FABRIC_CA_SERVER_DEBUG=true
+    ports:
+      - "7052:7052"
+    volumes:
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/tls-ca:/etc/hyperledger/fabric-ca-server
+
+  rca-org0:
+    container_name: rca-org0
+    image: hyperledger/fabric-ca
+    command: sh -c 'fabric-ca-server start -d -b rca-org0-admin:rca-org0-adminpw --port 7053'
+    environment:
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CSR_CN=rca-org0
+      - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
+      - FABRIC_CA_SERVER_DEBUG=true
+    ports:
+      - "7053:7053"
+    volumes:
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org0/rca-org0:/etc/hyperledger/fabric-ca-server
+
+  rca-org1:
+    container_name: rca-org1
+    image: hyperledger/fabric-ca
+    command: sh -c 'fabric-ca-server start -d -b rca-org1-admin:rca-org1-adminpw --port 7054'
+    environment:
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CSR_CN=rca-org1
+      - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
+      - FABRIC_CA_SERVER_DEBUG=true
+    ports:
+      - "7054:7054"
+    volumes:
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/rca-org1:/etc/hyperledger/fabric-ca-server
+
+  rca-org2:
+    container_name: rca-org2
+    image: hyperledger/fabric-ca
+    command: sh -c 'fabric-ca-server start -d -b rca-org2-admin:rca-org2-adminpw --port 7055'
+    environment:
+      - FABRIC_CA_SERVER_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_CSR_CN=rca-org2
+      - FABRIC_CA_SERVER_CSR_HOSTS=0.0.0.0
+      - FABRIC_CA_SERVER_DEBUG=true
+    ports:
+      - "7055:7055"
+    volumes:
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/rca-org2:/etc/hyperledger/fabric-ca-server
+  
+  peer1-org1:
+    container_name: peer1-org1
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_PEER_ID=peer1-org1
+      - CORE_PEER_ADDRESS=peer1-org1:7051
+      - CORE_PEER_LOCALMSPID=org1MSP
+      - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org1/peer1/msp
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=prototype_default
+      - FABRIC_LOGGING_SPEC=debug
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/org1/peer1/tls-msp/signcerts/cert.pem
+      - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/org1/peer1/tls-msp/keystore/key.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/org1/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-org1:7051
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+
+    working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer1
+    volumes:
+      - /var/run:/host/var/run
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer1:/tmp/hyperledger/org1/peer1
+    
+
+  peer2-org1:
+    container_name: peer2-org1
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_PEER_ID=peer2-org1
+      - CORE_PEER_ADDRESS=peer2-org1:7051
+      - CORE_PEER_LOCALMSPID=org1MSP
+      - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org1/peer2/msp
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=prototype_default
+      - FABRIC_LOGGING_SPEC=grpc=debug:info
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/org1/peer2/tls-msp/signcerts/cert.pem
+      - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/org1/peer2/tls-msp/keystore/key.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/org1/peer2/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2-org1:7051
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1-org1:7051
+    working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer2
+    volumes:
+      - /var/run:/host/var/run
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer2:/tmp/hyperledger/org1/peer2
+    
+  peer3-org1:
+    container_name: peer3-org1
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_PEER_ID=peer3-org1
+      - CORE_PEER_ADDRESS=peer3-org1:7051
+      - CORE_PEER_LOCALMSPID=org1MSP
+      - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org1/peer3/msp
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=prototype_default
+      - FABRIC_LOGGING_SPEC=grpc=debug:info
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/org1/peer3/tls-msp/signcerts/cert.pem
+      - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/org1/peer3/tls-msp/keystore/key.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/org1/peer3/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer3-org1:7051
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1-org1:7051
+    working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer3
+    volumes:
+      - /var/run:/host/var/run
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer3:/tmp/hyperledger/org1/peer3
+
+  peer4-org1:
+    container_name: peer4-org1
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_PEER_ID=peer4-org1
+      - CORE_PEER_ADDRESS=peer4-org1:7051
+      - CORE_PEER_LOCALMSPID=org1MSP
+      - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org1/peer4/msp
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=prototype_default
+      - FABRIC_LOGGING_SPEC=grpc=debug:info
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/org1/peer4/tls-msp/signcerts/cert.pem
+      - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/org1/peer4/tls-msp/keystore/key.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/org1/peer4/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer4-org1:7051
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1-org1:7051
+    working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer4
+    volumes:
+      - /var/run:/host/var/run
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer4:/tmp/hyperledger/org1/peer4
+
+
+  peer1-org2:
+    container_name: peer1-org2
+    image: hyperledger/fabric-peer
+ 
+    environment:
+      - CORE_PEER_ID=peer1-org2
+      - CORE_PEER_ADDRESS=peer1-org2:7051
+      - CORE_PEER_LOCALMSPID=org2MSP
+      - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org2/peer1/msp
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=prototype_default
+      - FABRIC_LOGGING_SPEC=debug
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/org2/peer1/tls-msp/signcerts/cert.pem
+      - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/org2/peer1/tls-msp/keystore/key.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/org2/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-org2:7051
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+    working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/peers/peer1
+    volumes:
+      - /var/run:/host/var/run
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/peers/peer1:/tmp/hyperledger/org2/peer1
+
+  peer2-org2:
+    container_name: peer2-org2
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_PEER_ID=peer2-org2
+      - CORE_PEER_ADDRESS=peer2-org2:7051
+      - CORE_PEER_LOCALMSPID=org2MSP
+      - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org2/peer2/msp
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=prototype_default
+      - FABRIC_LOGGING_SPEC=debug
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/tmp/hyperledger/org2/peer2/tls-msp/signcerts/cert.pem
+      - CORE_PEER_TLS_KEY_FILE=/tmp/hyperledger/org2/peer2/tls-msp/keystore/key.pem
+      - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/org2/peer2/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2-org2:7051
+      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1-org2:7051
+    working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/peers/peer2
+    volumes:
+      - /var/run:/host/var/run
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/peers/peer2:/tmp/hyperledger/org2/peer2
+
+  orderer1-org0:
+    container_name: orderer1-org0
+    image: hyperledger/fabric-orderer
+    
+    environment:
+      - ORDERER_HOME=/tmp/hyperledger/orderer
+      - ORDERER_HOST=orderer1-org0
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/tmp/hyperledger/org0/orderer/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=org0MSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/tmp/hyperledger/org0/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/tmp/hyperledger/org0/orderer/tls-msp/signcerts/cert.pem
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/tmp/hyperledger/org0/orderer/tls-msp/keystore/key.pem
+      - ORDERER_GENERAL_TLS_ROOTCAS=/tmp/hyperledger/org0/orderer/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs
+    volumes:
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org0/orderer:/tmp/hyperledger/org0/orderer/
+
+  
+  cli-org1:
+    container_name: cli-org1
+    image: hyperledger/fabric-tools
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_ID=cli-org1
+      - CORE_PEER_ADDRESS=peer1-org1:7051
+      - CORE_PEER_LOCALMSPID=org1MSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/org1/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+      - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org1/peer1/msp
+    working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1
+    command: sh
+    volumes:
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer1:/tmp/hyperledger/org1/peer1
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer1/chaincode:/opt/gopath/src/github.com/hyperledger/fabric-samples/chaincode
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/admin:/tmp/hyperledger/org1/admin
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/chaincode-go:/tmp/hyperledger/chaincode-go
+
+  cli-org2:
+    container_name: cli-org2
+    image: hyperledger/fabric-tools
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_ID=cli-org2
+      - CORE_PEER_ADDRESS=peer1-org2:7051
+      - CORE_PEER_LOCALMSPID=org2MSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_ROOTCERT_FILE=/tmp/hyperledger/org2/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+      - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org2/peer1/msp
+    working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2
+    command: sh
+    volumes:
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/peers/peer1:/tmp/hyperledger/org2/peer1
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/peers/peer1/chaincode:/opt/gopath/src/github.com/hyperledger/fabric-samples/chaincode
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/admin:/tmp/hyperledger/org2/admin
+
+

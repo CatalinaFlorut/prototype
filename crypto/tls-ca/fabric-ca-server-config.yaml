@@ -1,0 +1,64 @@
+version: v1.5.9
+port: 7052
+
+tls:
+  enabled: true
+  certfile: 
+  keyfile: 
+  clientauth:
+    type: noclientcert
+
+ca:
+  name: tls-ca
+  keyfile:
+  certfile:
+
+registry:
+  maxenrollments: -1
+  identities:
+    - name: tls-ca-admin
+      pass: tls-ca-adminpw
+      type: client
+      attrs:
+        hf.Registrar.Roles: "*"
+        hf.Revoker: true
+        hf.IntermediateCA: true
+        hf.GenCRL: true
+        hf.Registrar.Attributes: "*"
+        hf.AffiliationMgr: true
+
+db:
+  type: sqlite3
+  datasource: fabric-ca-server.db
+
+affiliations:
+  org1:
+    - department1
+    - department2
+  org2:
+    - department1
+
+signing:
+  profiles:
+    ca:
+      expiry: 43800h
+      caconstraint:
+        isca: true
+        maxpathlen: 0
+    tls:
+      expiry: 8760h
+
+csr:
+  cn: tls-ca
+  names:
+    - C: US
+      ST: "North Carolina"
+      L:
+      O: Hyperledger
+      OU: Fabric
+  hosts:
+    - localhost
+    - 127.0.0.1
+
+operations:
+  listenAddress: 127.0.0.1:9443

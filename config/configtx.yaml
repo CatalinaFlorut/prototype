@@ -1,0 +1,234 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+---
+################################################################################
+#
+#   Section: organizations
+#
+#   - This section defines the different organizational identities which will
+#   be referenced later in the configuration.
+#
+################################################################################
+Organizations:
+  - &org0
+ 
+    Name: org0
+    SkipAsForeign: false
+    ID: org0MSP
+    MSPDir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org0/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('org0MSP.admin', 'org0MSP.peer', 'org0MSP.client', 'org0MSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('org0MSP.admin', 'org0MSP.peer', 'org0MSP.client','org0MSP.orderer', 'org0MSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('org0MSP.member')"
+    OrdererEndpoints:
+      - orderer1-org0:7050
+
+
+  - &org1
+  
+    Name: org1MSP
+    SkipAsForeign: false
+    ID: org1MSP
+    MSPDir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('org1MSP.admin', 'org1MSP.peer', 'org1MSP.client', 'org1MSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('org1MSP.admin', 'org1MSP.peer', 'org1MSP.client','org0MSP.orderer', 'org1MSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('org1MSP.member')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('org1MSP.member')"
+
+
+  - &org2
+    Name: org2MSP
+    SkipAsForeign: false
+    ID: org2MSP
+    MSPDir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/msp
+
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('org2MSP.admin', 'org2MSP.peer', 'org2MSP.client', 'org2MSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('org2MSP.admin', 'org2MSP.peer', 'org2MSP.client','org0MSP.orderer', 'org2MSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('org2MSP.member')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('org2MSP.member')"
+################################################################################
+#
+#   SECTION: Capabilities
+#
+#
+################################################################################
+Capabilities:
+
+  Channel: &ChannelCapabilities
+    V2_0: true
+
+  Orderer: &OrdererCapabilities
+    V2_0: true
+
+  Application: &ApplicationCapabilities
+
+    V2_0: true
+################################################################################
+#
+#   SECTION: Application
+#
+#   - This section defines the values to encode into a config transaction or
+#   genesis block for application related parameters
+#
+################################################################################
+Application: &ApplicationDefaults
+
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule:  "ANY Admins"
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "ANY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "ANY Endorsement"
+  Capabilities:
+    <<: *ApplicationCapabilities
+################################################################################
+#
+#   SECTION: Orderer
+#
+#   - This section defines the values to encode into a config transaction or
+#   genesis block for orderer related parameters
+#
+################################################################################
+Orderer: &OrdererDefaults
+
+  Capabilities:
+    <<: *OrdererCapabilities
+  OrdererType: solo
+  Addresses:
+    - orderer1-org0:7050
+  BatchTimeout: 20s
+  BatchSize:
+    MaxMessageCount: 20
+    AbsoluteMaxBytes: 10 MB
+    PreferredMaxBytes: 400 KB
+
+
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule:  "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule:  "ANY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+################################################################################
+#
+#   CHANNEL
+#
+#   This section defines the values to encode into a config transaction or
+#   genesis block for channel related parameters.
+#
+################################################################################
+Channel: &ChannelDefaults
+
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule:  "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule:  "ANY Admins"
+
+  Capabilities:
+    <<: *ChannelCapabilities
+################################################################################
+#
+#   Profile
+#
+#   - Different configuration profiles may be encoded here to be specified
+#   as parameters to the configtxgen tool
+#
+################################################################################
+Profiles:
+  OrgsOrdererGenesis:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *org0
+    Consortiums:
+      SampleConsortium:
+        Organizations:
+          - *org1
+          - *org2
+      SingleSampleConsortium:
+        Organizations:
+          - *org1
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *org1
+        - *org2
+
+
+  OrgsChannel:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *org0
+    Consortium: SampleConsortium
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *org1
+        - *org2
+
+  SingleOrgChannel:
+    <<: *ChannelDefaults
+    Consortium: SingleSampleConsortium
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *org0
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *org1

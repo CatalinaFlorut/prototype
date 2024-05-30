@@ -1,0 +1,34 @@
+peer:
+    id: jdoe
+    networkId: dev
+    listenAddress: 0.0.0.0:7051
+    address: 0.0.0.0:7051
+    addressAutoDetect: false
+    gateway:
+        enabled: true
+        endorsementTimeout: 30s
+        broadcastTimeout: 30s
+        dialTimeout: 2m
+    tls:
+        enabled: true
+        clientAuthRequired: false
+        cert:
+            file: /tmp/hyperledger/org1/peer1/tls-msp/signcerts/cert.pem
+        key:
+            file: /tmp/hyperledger/org1/peer1/tls-msp/keystore/key.pem
+        rootcert:
+            file: /tmp/hyperledger/org1/peer1/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+    gossip:
+        useLeaderElection: true
+        orgLeader: false
+        bootstrap: 0.0.0.0:7051
+    BCCSP:
+        Default: SW
+        SW:
+          Hash: SHA2
+          Security: 256
+          FileKeyStore:
+            KeyStore: /tmp/hyperledger/org1/peer1/msp/keystore
+
+
+# Additional settings for vm, chaincode, ledger, operations, and metrics will follow
