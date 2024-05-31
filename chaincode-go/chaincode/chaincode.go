@@ -92,9 +92,9 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 			UpdatedTime:     time.Time{}, // Zero value as no updates yet
 			DetectedTime:    time.Now().Add(-time.Hour),
 			Type:            "Security",
-			Impact:          "",
-			RecoverySteps:   "",
-			Resolution:      "",
+			Impact:          "Not specified",
+			RecoverySteps:   "Not specified",
+			Resolution:      "Not specified",
 		},
 		{
 			AffectedSystems: []string{"ITSystemPeer2", "ITTeamPeer"},
@@ -107,9 +107,9 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 			UpdatedTime:     time.Time{},
 			DetectedTime:    time.Now().Add(-2 * time.Hour),
 			Type:            "Technical",
-			Impact:          "",
-			RecoverySteps:   "",
-			Resolution:      "",
+			Impact:          "Not specified",
+			RecoverySteps:   "Not specified",
+			Resolution:      "Not specified",
 		},
 		{
 			AffectedSystems: []string{"ITTeamPeer", "ITSystemPeer1"},
@@ -122,9 +122,9 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 			UpdatedTime:     time.Time{},
 			DetectedTime:    time.Now().Add(-30 * time.Minute),
 			Type:            "Physical",
-			Impact:          "",
-			RecoverySteps:   "",
-			Resolution:      "",
+			Impact:          "Not specified",
+			RecoverySteps:   "Not specified",
+			Resolution:      "Not specified",
 		},
 		{
 			AffectedSystems: []string{"ITTeamPeer"},
@@ -137,9 +137,9 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 			UpdatedTime:     time.Time{}, // Zero value indicates no updates yet.
 			DetectedTime:    time.Now().Add(-15 * time.Minute),
 			Type:            "Privacy",
-			Impact:          "",
-			RecoverySteps:   "",
-			Resolution:      "",
+			Impact:          "Not specified",
+			RecoverySteps:   "Not specified",
+			Resolution:      "Not specified",
 		},
 		{
 			AffectedSystems: []string{"ITSystemPeer1", "ITTeamPeer"},
@@ -152,9 +152,9 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 			UpdatedTime:     time.Time{},                // Zero value as no updates yet
 			DetectedTime:    time.Now().Add(-time.Hour), // Assume detected an hour before creation
 			Type:            "Security",
-			Impact:          "",
-			RecoverySteps:   "",
-			Resolution:      "",
+			Impact:          "Not specified",
+			RecoverySteps:   "Not specified",
+			Resolution:      "Not specified",
 		},
 		{
 			AffectedSystems: []string{"ITSystemPeer2", "ITTeamPeer"},
@@ -167,9 +167,9 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 			UpdatedTime:     time.Time{},
 			DetectedTime:    time.Now().Add(-2 * time.Hour), // Assume detected two hours before creation
 			Type:            "Technical",
-			Impact:          "",
-			RecoverySteps:   "",
-			Resolution:      "",
+			Impact:          "Not specified",
+			RecoverySteps:   "Not specified",
+			Resolution:      "Not specified",
 		},
 	}
 
@@ -249,12 +249,12 @@ func (s *SmartContract) CreateIncident(ctx contractapi.TransactionContextInterfa
 		SeverityLevel:   severityLevel, // Use the validated SeverityLevel
 		Status:          "Open",
 		CreatedTime:     now,
-		UpdatedTime:     time.Time{},  // Initialize UpdatedTime as empty
-		DetectedTime:    now,          // Set DetectedTime as creation time or modify as necessary
-		Type:            incidentType, // Use the validated Incident Type
-		Impact:          "",           // Start with an empty Impact
-		RecoverySteps:   "",           // Start with empty RecoverySteps
-		Resolution:      "",           // Start with an empty Resolution
+		UpdatedTime:     time.Time{},     // Initialize UpdatedTime as empty
+		DetectedTime:    now,             // Set DetectedTime as creation time or modify as necessary
+		Type:            incidentType,    // Use the validated Incident Type
+		Impact:          "Not specified", // Start with an empty Impact
+		RecoverySteps:   "Not specified", // Start with empty RecoverySteps
+		Resolution:      "Not specified", // Start with an empty Resolution
 	}
 
 	incidentJSON, err := json.Marshal(incident)
@@ -277,7 +277,12 @@ func (s *SmartContract) CreateIncident(ctx contractapi.TransactionContextInterfa
 	if err != nil {
 		return fmt.Errorf("failed to update the incident counter in the world state: %v", err)
 	}
-
+	func (s *SmartContract) CreateAsset(ctx contractapi.TransactionContextInterface, id string, value string) error {
+    // Asset creation logic here
+    ctx.GetStub().SetEvent("AssetCreated", []byte(fmt.Sprintf("Asset ID: %s, Value: %s", id, value)))
+    return nil
+}
+	ctx.GetStub().SetEvent("IncidentCreated", []byte(fmt.Sprintf("Incident ID: %s, Description: %s", incidentId, description)))
 	return nil
 }
 
@@ -308,7 +313,7 @@ func (s *SmartContract) ReviewIncident(ctx contractapi.TransactionContextInterfa
 	if err != nil {
 		return err
 	}
-
+	ctx.GetStub().SetEvent("IncidentReviewed", []byte(fmt.Sprintf("Incident ID: %s", incidentId)))
 	return ctx.GetStub().PutState(incidentId, updatedIncidentJSON)
 }
 
@@ -343,7 +348,7 @@ func (s *SmartContract) ResolveIncident(ctx contractapi.TransactionContextInterf
 	if err != nil {
 		return err
 	}
-
+	ctx.GetStub().SetEvent("IncidentResolved", []byte(fmt.Sprintf("Incident ID: %s, Resolution: %s", incidentId, resolutionDetails)))
 	return ctx.GetStub().PutState(incidentId, updatedIncidentJSON)
 }
 
