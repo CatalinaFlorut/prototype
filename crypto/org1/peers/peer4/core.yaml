@@ -1,0 +1,50 @@
+peer4-org1:
+  id: peer4-org1
+  address: peer4-org1:7051
+  listenAddress: 0.0.0.0:7051
+  chaincodeListenAddress: 0.0.0.0:7052
+  gateway:
+    enabled: true
+  ledger:
+    blockchain:
+    state:
+      stateDatabase: CouchDB
+      couchDBConfig:
+        couchDBAddress: couchdb:5984
+        username: couchuser
+        password: couchpassword
+        createGlobalChangesDB: true
+        maxRetries: 3
+        maxRetriesOnStartup: 10
+        requestTimeout: 35s
+    history:
+      enableHistoryDatabase: true
+  gossip:
+    useLeaderElection: true
+    orgLeader: false
+  tls:
+    enabled: true
+    cert:
+      file: /tmp/hyperledger/org1/peer4/tls-msp/signcerts/cert.pem
+    key:
+      file: /tmp/hyperledger/org1/peer4/tls-msp/keystore/key.pem
+    rootcert:
+      file: /tmp/hyperledger/org1/peer4/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+  mspConfigPath: /tmp/hyperledger/org1/peer4/msp
+  localMspId: Org1MSP
+  logging:
+    level: info
+  operations:
+    listenAddress: 0.0.0.0:9443
+    tls:
+      enabled: true
+      cert:
+        file: /tmp/hyperledger/org1/peer4/tls-msp/signcerts/cert.pem
+      key:
+        file: /tmp/hyperledger/org1/peer4/tls-msp/keystore/key.pem
+      clientAuthRequired: true
+      clientRootCAs:
+        files:
+          - /tmp/hyperledger/org1/peer4/tls-msp/tlscacerts/tls-0-0-0-0-7052.pem
+
+

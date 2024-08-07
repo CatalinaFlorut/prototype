@@ -60,6 +60,17 @@ services:
       - "7055:7055"
     volumes:
       - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/rca-org2:/etc/hyperledger/fabric-ca-server
+  couchdb:
+    container_name: couchdb
+    image: couchdb:3.1
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    ports:
+      - "5984:5984"
+    volumes:
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/couchdb_data:/etc/hyperledger/couchdb/data
+
   
   peer1-org1:
     container_name: peer1-org1
@@ -80,7 +91,12 @@ services:
       - CORE_PEER_GOSSIP_ORGLEADER=false
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-org1:7051
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
-
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=password
+    depends_on:
+      - couchdb
     working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer1
     volumes:
       - /var/run:/host/var/run
@@ -107,6 +123,12 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2-org1:7051
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1-org1:7051
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=password
+    depends_on:
+      - couchdb
     working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer2
     volumes:
       - /var/run:/host/var/run
@@ -132,6 +154,12 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer3-org1:7051
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1-org1:7051
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=password
+    depends_on:
+      - couchdb
     working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer3
     volumes:
       - /var/run:/host/var/run
@@ -157,6 +185,12 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer4-org1:7051
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1-org1:7051
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=password
+    depends_on:
+      - couchdb
     working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer4
     volumes:
       - /var/run:/host/var/run
@@ -183,6 +217,12 @@ services:
       - CORE_PEER_GOSSIP_ORGLEADER=false
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1-org2:7051
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=password
+    depends_on:
+      - couchdb
     working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/peers/peer1
     volumes:
       - /var/run:/host/var/run
@@ -208,6 +248,12 @@ services:
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2-org2:7051
       - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1-org2:7051
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=password
+    depends_on:
+      - couchdb
     working_dir: /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/peers/peer2
     volumes:
       - /var/run:/host/var/run
@@ -257,6 +303,7 @@ services:
       - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/peers/peer1/chaincode:/opt/gopath/src/github.com/hyperledger/fabric-samples/chaincode
       - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org1/admin:/tmp/hyperledger/org1/admin
       - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/chaincode-go:/tmp/hyperledger/chaincode-go
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/chaincode2-go:/tmp/hyperledger/chaincode2-go
 
   cli-org2:
     container_name: cli-org2
@@ -279,5 +326,7 @@ services:
       - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/peers/peer1:/tmp/hyperledger/org2/peer1
       - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/peers/peer1/chaincode:/opt/gopath/src/github.com/hyperledger/fabric-samples/chaincode
       - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/crypto/org2/admin:/tmp/hyperledger/org2/admin
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/chaincode-go:/tmp/hyperledger/chaincode-go
+      - /mnt/c/Users/catal/Go/src/github.com/catalinaFlorut/fabric-samples/prototype/chaincode2-go:/tmp/hyperledger/chaincode2-go
 
 
